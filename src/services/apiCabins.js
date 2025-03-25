@@ -26,7 +26,8 @@ export async function createEditCabin(newObj) {
   const { data: newData, error } = await supabase
     .from("cabins")
     .insert([{ ...newObj, image: imgPath }])
-    .select();
+    .select()
+    .single();
 
   console.log("newdata image url", newData);
   //uploading image
