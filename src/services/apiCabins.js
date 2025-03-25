@@ -1,5 +1,5 @@
 import supabase, { supabaseUrl } from "./supabase";
-
+//hello my name is anil nayak
 export async function getAllCabins() {
   const { data, error } = await supabase.from("cabins").select("*");
   console.log("getAllCabins", error);
