@@ -15,7 +15,7 @@ export async function deleteCabin(id) {
   }
   return data;
 }
-  
+
 //https://tbcqrlrgetvgxzialkex.supabase.co/storage/v1/object/public/cabins//cabin-001.jpg
 export async function createEditCabin(newObj) {
   console.log("newObj pritnting", newObj);
