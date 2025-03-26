@@ -40,7 +40,7 @@ export async function createEditCabin(newObj) {
     const { data, error } = await supabase
       .from("cabins")
       .delete()
-      .eq("id", newData[0].id);
+      .eq("id", newData.id);
     console.error(uploadError);
     throw new Error("cabin couldnt  created and failed to upload image ");
   }
