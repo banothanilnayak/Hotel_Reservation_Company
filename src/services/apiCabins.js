@@ -33,7 +33,7 @@ export async function createEditCabin(newObj) {
   //uploading image
   const { error: uploadError } = await supabase.storage
     .from("cabins")
-    .upload(imgName, newData[0].image);
+    .upload(imgName, newData.image);
 
   //if any error while uploading then delete the cabin
   if (uploadError) {
