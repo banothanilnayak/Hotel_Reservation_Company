@@ -16,8 +16,9 @@ const Error = styled.span`
   font-size: 1.4rem;
   color: var(--color-red-700);
 `;
-function CreateCabinForm({ cabinData, editCabin }) {
-  console.log("cabinData", cabinData);
+
+//intialized to empty so that does not show error missing prop validation inside the  function
+function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
   const {
     handleSubmit,
     register,
@@ -30,7 +31,9 @@ function CreateCabinForm({ cabinData, editCabin }) {
 
   const { errors } = formState;
   const queryClient = useQueryClient();
-  const { mutate, isLoading } = useMutation({
+
+  //creating a new cabin
+  const { mutate: create, isCreating } = useMutation({
     mutationFn: createEditCabin,
     onSuccess: () => {
       toast.success("successfully created a cabin");
@@ -44,9 +47,28 @@ function CreateCabinForm({ cabinData, editCabin }) {
     },
   });
 
+  //editing the cabin
+  const { mutate: edit, isEditing } = useMutation({
+    mutationFn: ({ newData, editID }) => createEditCabin(newData, editID),
+    onSuccess: () => {
+      toast.success("successfully Edited a cabin");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+      resetForm();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   function handleSubmitForm(data) {
-    console.log("form data", data);
-    mutate({ ...data, image: data.image[0] });
+    if (data?.id) {
+      const { id: editID, ...newData } = data;
+      edit({ newData, editID });
+    } else {
+      create(data);
+    }
   }
 
   function onErrorHandle(error) {
@@ -64,7 +86,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
       >
         <Input
           type="text"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           id="name"
           {...register("name", {
             required: "This field is required",
@@ -83,7 +105,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
       >
         <Input
           type="number"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           id="maxCapacity"
           {...register("maxCapacity", {
             required: "This field is required",
@@ -102,7 +124,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
       >
         <Input
           type="number"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           id="regularPrice"
           {...register("regularPrice", {
             required: "This field is required",
@@ -124,7 +146,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
       >
         <Input
           type="number"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           id="discount"
           {...register("discount", {
             required: "This field is required",
@@ -151,7 +173,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
         <Textarea
           type="number"
           id="description"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           name="description"
           {...register("description", {
             required: "This field is required",
@@ -164,7 +186,7 @@ function CreateCabinForm({ cabinData, editCabin }) {
         <FileInput
           id="image"
           accept="image/*"
-          disabled={isLoading}
+          disabled={isCreating || isEditing}
           {...register("image", {
             required: editCabin ? false : "This field is required",
           })}

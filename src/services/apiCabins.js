@@ -2,7 +2,6 @@ import supabase, { supabaseUrl } from "./supabase";
 
 export async function getAllCabins() {
   const { data, error } = await supabase.from("cabins").select("*");
-  console.log("getAllCabins", error);
   if (error) throw new Error("failed fetching the cabins..");
   return data;
 }
@@ -17,20 +16,39 @@ export async function deleteCabin(id) {
 }
 
 //https://tbcqrlrgetvgxzialkex.supabase.co/storage/v1/object/public/cabins//cabin-001.jpg
-export async function createEditCabin(newObj) {
-  console.log("newObj pritnting", newObj);
+export async function createEditCabin(newObj, editID = "") {
+
+  const hasImagePath = newObj?.image?.startsWith?.(supabase);
+
   //creating a cabin
   const imgName = `${Math.random()}-${newObj.image.name}`.replaceAll("/", "");
-  const imgPath = `${supabaseUrl}/storage/v1/object/public/cabins/${imgName}`;
 
-  const { data: newData, error } = await supabase
-    .from("cabins")
-    .insert([{ ...newObj, image: imgPath }])
-    .select()
-    .single();
+  const imgPath = hasImagePath
+    ? newObj.image
+    : `${supabaseUrl}/storage/v1/object/public/cabins/${imgName}`;
 
-  console.log("newdata image url", newData);
-  //uploading image
+  //reusing the query
+  let query = supabase.from("cabins");
+
+  if (!editID) {
+    //if no edit id then insert data else edit data
+    query = query
+      .insert([{ ...newObj, image: imgPath }])
+      .select()
+      .single();
+  } else {
+    // if edit id present then update cabin using editID
+    query = query
+      .update({ ...newObj, image: imgPath })
+      .eq("id", editID)
+      .select()
+      .single();
+  }
+
+  //executing query based on condition
+  const { data: newData, error } = await query;
+
+  //uploading image to the storage once the text data is successfully stored inside the cabins cable
   const { error: uploadError } = await supabase.storage
     .from("cabins")
     .upload(imgName, newData.image);
