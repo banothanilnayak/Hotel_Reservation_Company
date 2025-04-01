@@ -103,6 +103,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
           )
         }
       >
+        
         <Input
           type="number"
           disabled={isCreating || isEditing}
