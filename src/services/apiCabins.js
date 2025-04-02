@@ -6,7 +6,6 @@ export async function getAllCabins() {
   return data;
 }
 
-
 export async function deleteCabin(id) {
   const { data, error } = await supabase.from("cabins").delete().eq("id", id);
   if (error) {
@@ -18,12 +17,10 @@ export async function deleteCabin(id) {
 
 //https://tbcqrlrgetvgxzialkex.supabase.co/storage/v1/object/public/cabins//cabin-001.jpg
 export async function createEditCabin(newObj, editID = "") {
-
   const hasImagePath = newObj?.image?.startsWith?.(supabase);
-
+  if (hasImagePath) return newObj; //not re creating the cabin and returnin from here
   //creating a cabin
   const imgName = `${Math.random()}-${newObj.image.name}`.replaceAll("/", "");
-
   const imgPath = hasImagePath
     ? newObj.image
     : `${supabaseUrl}/storage/v1/object/public/cabins/${imgName}`;

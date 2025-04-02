@@ -1,16 +1,10 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteHook } from "./useDeleteHook";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { useCreateCabin } from "./useCreateCabinHook";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -52,6 +46,8 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const [editCabin, setEditCabin] = useState(false);
+  const { create, isCreating } = useCreateCabin(); //to duplicate the cabin
+  const { isDeleting, deleteCabinMutate } = useDeleteHook();
   const {
     id: cabinID,
     image,
@@ -61,7 +57,17 @@ function CabinRow({ cabin }) {
     discount,
   } = cabin;
 
-  const { isDeleting, deleteCabinMutate } = useDeleteHook();
+  //function handling the duplicate action of create cabin
+  function handleDuplicateAction() {
+    create({
+      name: `Copy of ${name}`,
+      image,
+      maxCapacity,
+      regularPrice,
+      discount,
+    });
+  }
+
   return (
     <>
       <TableRow role="row">
@@ -71,12 +77,17 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{formatCurrency(discount)}</Discount>
         <div>
-          <button onClick={() => setEditCabin(!editCabin)}>Edit</button>
+          <button onClick={() => handleDuplicateAction()}>
+            <HiSquare2Stack />
+          </button>
+          <button onClick={() => setEditCabin(!editCabin)}>
+            <HiPencil />
+          </button>
           <button
             disabled={isDeleting}
             onClick={() => deleteCabinMutate(cabinID)}
           >
-            Delete
+            <HiTrash />
           </button>
         </div>
       </TableRow>
