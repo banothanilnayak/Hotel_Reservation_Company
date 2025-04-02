@@ -6,17 +6,10 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import { createEditCabin } from "../../services/apiCabins";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
+import Error from "../../ui/Error";
 import { useCreateCabin } from "./useCreateCabinHook";
 import { useEditCabin } from "./useEditCabinHook";
-
-const Error = styled.span`
-  font-size: 1.4rem;
-  color: var(--color-red-700);
-`;
 
 //intialized to empty so that does not show error missing prop validation inside the  function
 function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
