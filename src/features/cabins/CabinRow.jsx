@@ -4,6 +4,7 @@ import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteHook } from "./useDeleteHook";
 import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { useCreateCabin } from "./useCreateCabinHook";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -45,6 +46,8 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const [editCabin, setEditCabin] = useState(false);
+  const { create, isCreating } = useCreateCabin(); //to duplicate the cabin
+  const { isDeleting, deleteCabinMutate } = useDeleteHook();
   const {
     id: cabinID,
     image,
@@ -54,7 +57,17 @@ function CabinRow({ cabin }) {
     discount,
   } = cabin;
 
-  const { isDeleting, deleteCabinMutate } = useDeleteHook();
+  //function handling the duplicate action of create cabin
+  function handleDuplicateAction() {
+    create({
+      name: `Copy of ${name}`,
+      image,
+      maxCapacity,
+      regularPrice,
+      discount,
+    });
+  }
+
   return (
     <>
       <TableRow role="row">
@@ -64,7 +77,7 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{formatCurrency(discount)}</Discount>
         <div>
-          <button>
+          <button onClick={() => handleDuplicateAction()}>
             <HiSquare2Stack />
           </button>
           <button onClick={() => setEditCabin(!editCabin)}>
