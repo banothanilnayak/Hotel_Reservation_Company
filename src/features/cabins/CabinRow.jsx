@@ -1,16 +1,9 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteHook } from "./useDeleteHook";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -71,12 +64,17 @@ function CabinRow({ cabin }) {
         <Price>{formatCurrency(regularPrice)}</Price>
         <Discount>{formatCurrency(discount)}</Discount>
         <div>
-          <button onClick={() => setEditCabin(!editCabin)}>Edit</button>
+          <button>
+            <HiSquare2Stack />
+          </button>
+          <button onClick={() => setEditCabin(!editCabin)}>
+            <HiPencil />
+          </button>
           <button
             disabled={isDeleting}
             onClick={() => deleteCabinMutate(cabinID)}
           >
-            Delete
+            <HiTrash />
           </button>
         </div>
       </TableRow>
