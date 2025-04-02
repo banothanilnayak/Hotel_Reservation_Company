@@ -7,10 +7,11 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { createEditCabin } from "../../services/apiCabins";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
-import { useState } from "react";
+import { useCreateCabin } from "./useCreateCabinHook";
+import { useEditCabin } from "./useEditCabinHook";
 
 const Error = styled.span`
   font-size: 1.4rem;
@@ -30,36 +31,15 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
   });
 
   const { errors } = formState;
-  const queryClient = useQueryClient();
 
-  //creating a new cabin
-  const { mutate: create, isCreating } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success("successfully created a cabin");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      resetForm();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+  //creating a new cabin and you can also use reset form inside the custom hook fun call
+  const { create, isCreating } = useCreateCabin({
+    onSuccess: () => resetForm(),
   });
 
   //editing the cabin
-  const { mutate: edit, isEditing } = useMutation({
-    mutationFn: ({ newData, editID }) => createEditCabin(newData, editID),
-    onSuccess: () => {
-      toast.success("successfully Edited a cabin");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      resetForm();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+  const { isEditing, edit } = useEditCabin({
+    onSuccess: () => resetForm(),
   });
 
   function handleSubmitForm(data) {
@@ -70,6 +50,8 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
       create(data);
     }
   }
+
+  const isWorking = isCreating || isEditing;
 
   function onErrorHandle(error) {
     //has no work with this can use whenever need to monitor the error
@@ -86,7 +68,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
       >
         <Input
           type="text"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           id="name"
           {...register("name", {
             required: "This field is required",
@@ -103,10 +85,9 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
           )
         }
       >
-        
         <Input
           type="number"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           id="maxCapacity"
           {...register("maxCapacity", {
             required: "This field is required",
@@ -125,7 +106,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
       >
         <Input
           type="number"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           id="regularPrice"
           {...register("regularPrice", {
             required: "This field is required",
@@ -147,7 +128,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
       >
         <Input
           type="number"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           id="discount"
           {...register("discount", {
             required: "This field is required",
@@ -174,7 +155,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
         <Textarea
           type="number"
           id="description"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           name="description"
           {...register("description", {
             required: "This field is required",
@@ -187,7 +168,7 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
         <FileInput
           id="image"
           accept="image/*"
-          disabled={isCreating || isEditing}
+          disabled={isWorking}
           {...register("image", {
             required: editCabin ? false : "This field is required",
           })}
