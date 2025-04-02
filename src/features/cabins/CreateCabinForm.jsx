@@ -7,10 +7,10 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { createEditCabin } from "../../services/apiCabins";
-import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
-import { useState } from "react";
+import { useCreateCabin } from "./useCreateCabinHook";
 
 const Error = styled.span`
   font-size: 1.4rem;
@@ -30,21 +30,10 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
   });
 
   const { errors } = formState;
-  const queryClient = useQueryClient();
 
-  //creating a new cabin
-  const { mutate: create, isCreating } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success("successfully created a cabin");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      resetForm();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
+  //creating a new cabin and you can also use reset form inside the custom hook fun call
+  const { create, isCreating } = useCreateCabin({
+    onSuccess: () => resetForm(),
   });
 
   //editing the cabin
@@ -103,7 +92,6 @@ function CreateCabinForm({ cabinData = {}, editCabin = "" }) {
           )
         }
       >
-        
         <Input
           type="number"
           disabled={isCreating || isEditing}

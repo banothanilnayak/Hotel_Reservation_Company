@@ -52,7 +52,6 @@ const Discount = styled.div`
 
 function CabinRow({ cabin }) {
   const [editCabin, setEditCabin] = useState(false);
-  console.log(editCabin);
   const {
     id: cabinID,
     image,
