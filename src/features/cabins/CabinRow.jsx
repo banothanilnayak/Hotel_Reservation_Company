@@ -10,6 +10,7 @@ import { deleteCabin } from "../../services/apiCabins";
 import toast, { Toaster } from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteHook } from "./useDeleteHook";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -61,20 +62,7 @@ function CabinRow({ cabin }) {
     discount,
   } = cabin;
 
-  const queryClient = useQueryClient(); //queryclient to invalidate the queries so that once the data is deleted it will refresh the data by invalidating the query
-
-  //useMutation to delete the row
-  const { mutate, isLoading: isDeleting } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      toast.success("cabin successfully deleted");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-    },
-    onError: (error) => toast.error(error.message),
-  });
-
+  const { isDeleting, deleteCabinMutate } = useDeleteHook();
   return (
     <>
       <TableRow role="row">
@@ -85,7 +73,10 @@ function CabinRow({ cabin }) {
         <Discount>{formatCurrency(discount)}</Discount>
         <div>
           <button onClick={() => setEditCabin(!editCabin)}>Edit</button>
-          <button disabled={isDeleting} onClick={() => mutate(cabinID)}>
+          <button
+            disabled={isDeleting}
+            onClick={() => deleteCabinMutate(cabinID)}
+          >
             Delete
           </button>
         </div>
