@@ -5,13 +5,20 @@ import { useSettings } from "./useGetSettingsHook";
 import Spinner from "../../ui/Spinner";
 import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
-import Error from "../../ui/Error";
 import { useUpdateSettings } from "./useUpdateSettings";
+import styled from "styled-components";
+
+const Error = styled.span`
+  font-size: 1.4rem;
+  color: var(--color-red-700);
+`;
 
 function UpdateSettingsForm() {
   const { data, isLoading } = useSettings(); //custom hook created to fetch the settings
-  const { handleSubmit, register, formState, getValues } = useForm();
+  console.log("ank data", data);
+  const { handleSubmit, register, formState } = useForm();
   const { errors } = formState; //toget the errors
+  console.log(errors);
   const { isUpdating, settingsUpdateMutation } = useUpdateSettings();
   if (isLoading) return <Spinner />; // showing spinner while the appl.set. are being fetched
   function handleSubmitForm(data) {
@@ -30,13 +37,13 @@ function UpdateSettingsForm() {
           disabled={isUpdating}
           error={
             errors?.minBookingLength?.message && (
-              <Error message={errors.minBookingLength.message} />
+              <Error>{errors.minBookingLength.message} </Error>
             )
           }
           {...register("minBookingLength", {
             required: "This field is required",
           })}
-          defaultValue={parseInt(data?.minBookingLength)}
+          defaultValue={Number(data?.minBookingLength)}
         />
       </FormRow>
       <FormRow label="Maximum nights/booking">
@@ -46,13 +53,13 @@ function UpdateSettingsForm() {
           disabled={isUpdating}
           error={
             errors?.maxBookingLength?.message && (
-              <Error message={errors.maxBookingLength.message} />
+              <Error>{errors.maxBookingLength.message}</Error>
             )
           }
           {...register("maxBookingLength", {
             required: "This field is required",
           })}
-          defaultValue={parseInt(data?.maxBookingLength)}
+          defaultValue={Number(data?.maxBookingLength)}
         />
       </FormRow>
       <FormRow label="Maximum guests/booking">
@@ -62,13 +69,13 @@ function UpdateSettingsForm() {
           disabled={isUpdating}
           error={
             errors?.maxGuestPerBooking?.message && (
-              <Error message={errors.maxGuestPerBooking.message} />
+              <Error>{errors.maxGuestPerBooking.message}</Error>
             )
           }
           {...register("maxGuestPerBooking", {
             required: "This field is required",
           })}
-          defaultValue={parseInt(data?.maxGuestPerBooking)}
+          defaultValue={Number(data?.maxGuestPerBooking)}
         />
       </FormRow>
       <FormRow label="Breakfast price">
@@ -78,13 +85,13 @@ function UpdateSettingsForm() {
           disabled={isUpdating}
           error={
             errors?.breakfastPrice?.message && (
-              <Error message={errors.breakfastPrice.message} />
+              <Error>{errors.breakfastPrice.message} </Error>
             )
           }
           {...register("breakfastPrice", {
             required: "This field is required",
           })}
-          defaultValue={parseInt(data?.breakfastPrice)}
+          defaultValue={Number(data?.breakfastPrice)}
         />
       </FormRow>
       <FormRow>
